@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuratore Serbatoio</title>
+    <!-- Link al CSS esterno -->
+    <link rel="stylesheet" href="./style.css">
+    <!-- Collega il manifest della PWA -->
+    <link rel="manifest" href="./manifest.json">
+    <!-- Icona per dispositivi iOS -->
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <!-- Colore della barra di stato per Android (Chrome) -->
+    <meta name="theme-color" content="#2196F3">
+    <!-- Link a Google Fonts per Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>Configuratore Serbatoio</h1>
+    </header>
+
+    <main>
+        <aside class="left-menu">
+            <h2>Seleziona Opzioni</h2>
+            <!-- Bar -->
+            <div>
+                <label for="bar-option" class="dropdown-label">Bar:</label>
+                <select id="bar-option" class="dropdown-select">
+                    <option value="">Seleziona un valore</option>
+                    <option value="10">10</option>
+                    <option value="16">16</option>
+                </select>
+            </div>
+            
+            <!-- N° di ingressi -->
+            <div style="margin-top: 20px;">
+                <label for="num-inlets" class="dropdown-label">N° di ingressi:</label>
+                <select id="num-inlets" class="dropdown-select">
+                    <option value="">Seleziona un valore</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                </select>
+            </div>
+
+            <!-- Diametro Ingressi serbatoio (pollici) -->
+            <div style="margin-top: 20px;">
+                <label for="inlet-diameter" class="dropdown-label">Diametro Ingressi serbatoio (pollici):</label>
+                <select id="inlet-diameter" class="dropdown-select">
+                    <option value="">Seleziona un valore</option>
+                    <option value="2">2"</option>
+                    <option value="1.5">1 1/2"</option>
+                    <option value="1.25">1 1/4"</option>
+                    <option value="1">1"</option>
+                    <option value="0.75">3/4"</option>
+                    <option value="0.5">1/2"</option>
+                </select>
+            </div>
+
+            <!-- Nuovo menu a tendina: Diametro Ingresso serbatoio Lato Compressore (inizialmente nascosto) -->
+            <div id="compressor-inlet-diameter-container" style="margin-top: 20px; display: none;">
+                <label for="compressor-inlet-diameter" class="dropdown-label">Diametro Ingresso serbatoio Lato Compressore (pollici):</label>
+                <select id="compressor-inlet-diameter" class="dropdown-select">
+                    <option value="">Seleziona un valore</option>
+                    <option value="2">2"</option>
+                    <option value="1.5">1 1/2"</option>
+                    <option value="1.25">1 1/4"</option>
+                    <option value="1">1"</option>
+                    <option value="0.75">3/4"</option>
+                    <option value="0.5">1/2"</option>
+                </select>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <label for="top-inlet" class="dropdown-label">Ingresso superiore (pollici):</label>
+                <select id="top-inlet" class="dropdown-select">
+                    <option value="">Seleziona un valore</option>
+                    <option value="2">2"</option>
+                    <option value="1.5">1 1/2"</option>
+                    <option value="1.25">1 1/4"</option>
+                    <option value="1">1"</option>
+                    <option value="0.75">3/4"</option>
+                    <option value="0.5">1/2"</option>
+                </select>
+            </div>
+            <div style="margin-top: 20px;">
+                <label for="bottom-inlet" class="dropdown-label">Ingresso inferiore (pollici):</label>
+                <select id="bottom-inlet" class="dropdown-select">
+                    <option value="">Seleziona un valore</option>
+                    <option value="2">2"</option>
+                    <option value="1.5">1 1/2"</option>
+                    <option value="1.25">1 1/4"</option>
+                    <option value="1">1"</option>
+                    <option value="0.75">3/4"</option>
+                    <option value="0.5">1/2"</option>
+                </select>
+            </div>
+            <!-- N° di ingressi frontali -->
+            <div style="margin-top: 20px;">
+                <label for="num-front-inlets" class="dropdown-label">N° di ingressi frontali:</label>
+                <select id="num-front-inlets" class="dropdown-select">
+                    <option value="">Seleziona un valore</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                </select>
+            </div>
+            <!-- Nuovo menu a tendina: Diametro Ingresso Frontale (inizialmente nascosto) -->
+            <div id="front-inlet-diameter-container" style="margin-top: 20px; display: none;">
+                <label for="front-inlet-diameter-option" class="dropdown-label">Diametro Ingresso Frontale (pollici):</label>
+                <select id="front-inlet-diameter-option" class="dropdown-select">
+                    <option value="">Seleziona un valore</option>
+                    <option value="0.375">3/8"</option>
+                    <option value="0.25">1/4"</option>
+                </select>
+            </div>
+            
+            <!-- Ingresso Impianto (pollici) - SPOSTATO QUI -->
+            <div style="margin-top: 20px;">
+                <label for="plant-inlet" class="dropdown-label">Ingresso Impianto (pollici):</label>
+                <select id="plant-inlet" class="dropdown-select">
+                    <option value="">Seleziona un valore</option>
+                    <option value="2">2"</option>
+                    <option value="1.5">1 1/2"</option>
+                    <option value="1.25">1 1/4"</option>
+                    <option value="1">1"</option>
+                    <option value="0.75">3/4"</option>
+                    <option value="0.5">1/2"</option>
+                </select>
+            </div>
+
+            <!-- By-pass -->
+            <div style="margin-top: 20px;">
+                <label for="bypass-option" class="dropdown-label">By-pass:</label>
+                <select id="bypass-option" class="dropdown-select">
+                    <option value="">Seleziona un valore</option>
+                    <option value="si">Sì</option>
+                    <option value="no">No</option>
+                </select>
+            </div>
+
+            <!-- Nuovo ordine: Numero Compressori -->
+            <div style="margin-top: 20px;">
+                <label for="num-compressors" class="dropdown-label">Numero Compressori:</label>
+                <select id="num-compressors" class="dropdown-select">
+                    <option value="">Seleziona un valore</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                </select>
+            </div>
+            <!-- Nuovo ordine: Uscita compressore 1 -->
+            <div style="margin-top: 20px;">
+                <label for="compressor-outlet" class="dropdown-label">Uscita compressore 1 (pollici):</label>
+                <select id="compressor-outlet" class="dropdown-select">
+                    <option value="">Seleziona un valore</option>
+                    <option value="2">2"</option>
+                    <option value="1.5">1 1/2"</option>
+                    <option value="1.25">1 1/4"</option>
+                    <option value="1">1"</option>
+                    <option value="0.75">3/4"</option>
+                    <option value="0.5">1/2"</option>
+                </select>
+            </div>
+            <!-- Nuovo ordine: Uscita compressore 2 (inizialmente nascosto) -->
+            <div id="compressor-outlet-2-container" style="margin-top: 20px; display: none;">
+                <label for="compressor-outlet-2" class="dropdown-label">Uscita compressore 2 (pollici):</label>
+                <select id="compressor-outlet-2" class="dropdown-select">
+                    <option value="">Seleziona un valore</option>
+                    <option value="2">2"</option>
+                    <option value="1.5">1 1/2"</option>
+                    <option value="1.25">1 1/4"</option>
+                    <option value="1">1"</option>
+                    <option value="0.75">3/4"</option>
+                    <option value="0.5">1/2"</option>
+                </select>
+            </div>
+            <!-- Qui potrai aggiungere altri menu a tendina o opzioni -->
+        </aside>
+
+        <div class="center-content">
+            <!-- Contenitore immagine e pulsanti (inizialmente visibile) -->
+            <div id="configurator-view">
+                <div class="image-container">
+                    <img src="https://i.ibb.co/gF6sfJ5n/serbatoio.png" 
+                         alt="Serbatoio per aria compressa"
+                         title="Serbatoio per aria compressa"
+                         onerror="this.onerror=null;this.src='https://placehold.co/600x400/cccccc/333333?text=Immagine+non+disponibile';">
+                </div>
+                
+                <!-- Sezione Pulsanti Azione -->
+                <section class="configurator-options">
+                    <button id="open-materials-list-button" class="action-button">Apri Lista Materiali</button>
+                    <button id="save-configuration-button" class="action-button save-button">Salva Configurazione</button>
+                </section>
+            </div>
+
+            <!-- Area di visualizzazione del riepilogo (inizialmente nascosta) -->
+            <div id="summary-display-area" class="summary-display-area configurator-options">
+                <h2>Riepilogo Configurazione Serbatoio</h2>
+                <div id="configuration-details" class="summary-details">
+                    <!-- I dettagli della configurazione verranno inseriti qui dal JavaScript -->
+                </div>
+
+                <div class="materials-summary">
+                    <h3>Stima Materiali</h3>
+                    <ul id="estimated-materials-list">
+                        <!-- I materiali stimati verranno inseriti qui dal JavaScript -->
+                    </ul>
+                </div>
+                <!-- Nuovo pulsante per l'esportazione PDF -->
+                <button id="export-pdf-button" class="action-button save-button">Esporta PDF</button>
+                <button id="update-configuration-button" class="action-button save-button">Aggiorna</button>
+                <button id="back-from-summary-button" class="back-to-config-button action-button">Torna al Configuratore</button>
+            </div>
+
+            <!-- Area di visualizzazione della lista materiali (inizialmente nascosta) -->
+            <div id="materials-display-area" class="materials-display-area configurator-options">
+                <h2>Lista Materiali Serbatoio</h2>
+                <div class="materials-container-list">
+                    <h2>Materiali Disponibili</h2>
+                    <ul>
+                        <li>
+                            <div class="material-item">
+                                <span class="material-name"><strong>Tappi inox</strong></span>
+                                <div>
+                                    <input type="number" min="0" value="0" class="quantity-input" id="tappi-inox-qty">
+                                    <button class="add-button" data-material="Tappi inox" data-id="tappi-inox-qty">Aggiungi</button>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="material-item">
+                                <span class="material-name"><strong>Acciaio al Carbonio</strong></span>
+                                <div>
+                                    <input type="number" min="0" value="0" class="quantity-input" id="acciaio-carbonio-qty">
+                                    <button class="add-button" data-material="Acciaio al Carbonio" data-id="acciaio-carbonio-qty">Aggiungi</button>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="material-item">
+                                <span class="material-name"><strong>Acciaio Inossidabile (AISI 304)</strong></span>
+                                <div>
+                                    <input type="number" min="0" value="0" class="quantity-input" id="aisi304-qty">
+                                    <button class="add-button" data-material="Acciaio Inossidabile (AISI 304)" data-id="aisi304-qty">Aggiungi</button>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="material-item">
+                                <span class="material-name"><strong>Acciaio Inossidabile (AISI 316)</strong></span>
+                                <div>
+                                    <input type="number" min="0" value="0" class="quantity-input" id="aisi316-qty">
+                                    <button class="add-button" data-material="Acciaio Inossidabile (AISI 316)" data-id="aisi316-qty">Aggiungi</button>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="material-item">
+                                <span class="material-name"><strong>Vetroresina (FRP)</strong></span>
+                                <div>
+                                    <input type="number" min="0" value="0" class="quantity-input" id="vetroresina-qty">
+                                    <button class="add-button" data-material="Vetroresina (FRP)" data-id="vetroresina-qty">Aggiungi</button>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="material-item">
+                                <span class="material-name"><strong>Polietilene (PE)</strong></span>
+                                <div>
+                                    <input type="number" min="0" value="0" class="quantity-input" id="polietilene-qty">
+                                    <button class="add-button" data-material="Polietilene (PE)" data-id="polietilene-qty">Aggiungi</button>
+                                </div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="material-item">
+                                <span class="material-name"><strong>Polipropilene (PP)</strong></span>
+                                <div>
+                                    <input type="number" min="0" value="0" class="quantity-input" id="polipropilene-qty">
+                                    <button class="add-button" data-material="Polipropilene (PP)" data-id="polipropilene-qty">Aggiungi</button>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="added-list-container">
+                    <h2>Lista Materiali Aggiunti</h2>
+                    <ul id="added-materials-list" class="added-list">
+                        <!-- Gli elementi aggiunti dinamicamente verranno inseriti qui -->
+                    </ul>
+                </div>
+                <button id="back-from-materials-button" class="back-to-config-button action-button">Torna al Configuratore</button>
+            </div>
+        </div>
+
+        <!-- Sezione Accessori sulla destra -->
+        <aside class="right-accessories">
+            <section class="accessories-section">
+                <h2>Accessori</h2>
+                <!-- Manometro -->
+                <div>
+                    <label for="manometer-option" class="dropdown-label">Manometro:</label>
+                    <select id="manometer-option" class="dropdown-select">
+                        <option value="">Seleziona un valore</option>
+                        <option value="si">Sì</option>
+                        <option value="no">No</option>
+                    </select>
+                </div>
+                <!-- Nuovo menu a tendina: Diametro Manometro (inizialmente nascosto) -->
+                <div id="manometer-diameter-container" style="margin-top: 20px; display: none;">
+                    <label for="manometer-diameter-option" class="dropdown-label">Diametro Manometro (pollici):</label>
+                    <select id="manometer-diameter-option" class="dropdown-select">
+                        <option value="">Seleziona un valore</option>
+                        <option value="0.5">1/2"</option>
+                        <option value="0.375">3/8"</option>
+                        <option value="0.25">1/4"</option>
+                    </select>
+                </div>
+                <!-- Valvola di sicurezza -->
+                <div>
+                    <label for="safety-valve-option" class="dropdown-label">Valvola di sicurezza (pollici):</label>
+                    <select id="safety-valve-option" class="dropdown-select">
+                        <option value="">Seleziona un valore</option>
+                        <option value="2">2"</option>
+                        <option value="1.5">1 1/2"</option>
+                        <option value="1.25">1 1/4"</option>
+                        <option value="1">1"</option>
+                        <option value="0.75">3/4"</option>
+                    <option value="0.5">1/2"</option>
+                </select>
+                </div>
+                <!-- Scaricatore -->
+                <div>
+                    <label for="drainer-option" class="dropdown-label">Scaricatore:</label>
+                    <select id="drainer-option" class="dropdown-select">
+                        <option value="">Seleziona un valore</option>
+                        <option value="si">Sì</option>
+                        <option value="no">No</option>
+                    </select>
+                </div>
+                <!-- Nuovo menu a tendina: Tipo di Scaricatore (inizialmente nascosto) -->
+                <div id="drainer-type-container" style="margin-top: 20px; display: none;">
+                    <label for="drainer-type-option" class="dropdown-label">Tipo di Scaricatore:</label>
+                    <select id="drainer-type-option" class="dropdown-select">
+                        <option value="">Seleziona un tipo</option>
+                        <option value="ATS">ATS</option>
+                        <option value="Beko">Beko</option>
+                        <option value="Termodinamico">Termodinamico</option>
+                    </select>
+                </div>
+                <!-- Nuovo menu a tendina: Filtro Ottone -->
+                <div id="ottine-filter-container" style="margin-top: 20px;">
+                    <label for="ottone-filter-option" class="dropdown-label">Filtro Ottone:</label>
+                    <select id="ottone-filter-option" class="dropdown-select">
+                        <option value="">Seleziona un valore</option>
+                        <option value="si">Sì</option>
+                        <option value="no">No</option>
+                    </select>
+                </div>
+                <!-- Il pulsante Reset è stato rimosso -->
+                <!-- Qui verranno inseriti gli altri menu per la configurazione degli accessori. -->
+            </section>
+        </aside>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Il Tuo Configuratore Serbatoio</p>
+    </footer>
+
+    <!-- Link al JavaScript esterno -->
+    <script src="./script.js"></script>
+    <script>
+      // Il codice di registrazione del Service Worker è stato rimosso da qui
+      // per evitare errori nell'ambiente di anteprima.
+      // Funzionerà correttamente quando l'app sarà ospitata su un server HTTPS.
+    </script>
+</body>
+</html>
