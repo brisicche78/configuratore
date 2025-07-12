@@ -4,10 +4,417 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Configuratore Serbatoio</title>
-    <!-- Link al CSS esterno -->
-    <link rel="stylesheet" href="./style.css">
-    <!-- Collega il manifest della PWA -->
-    <link rel="manifest" href="./manifest.json">
+    <!-- Inclusione diretta del CSS per l'anteprima -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif; /* Usiamo Inter come richiesto */
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            border-radius: 8px; /* Angoli arrotondati per il body */
+        }
+
+        header {
+            background-color: #3f51b5; /* Blu Material Design */
+            color: white;
+            padding: 1em 0;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-bottom-left-radius: 8px; /* Angoli arrotondati */
+            border-bottom-right-radius: 8px; /* Angoli arrotondati */
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+
+        main {
+            flex-grow: 1;
+            padding: 20px;
+            display: flex; /* Abilita Flexbox per le colonne */
+            flex-direction: column; /* Di default, le colonne si impilano su schermi piccoli */
+            align-items: flex-start; /* Allinea il contenuto all'inizio (sinistra) */
+            gap: 20px; /* Spazio tra le colonne */
+            width: 100%; /* Occupa tutta la larghezza disponibile */
+            box-sizing: border-box; /* Include padding e border nella larghezza */
+        }
+
+        @media (min-width: 768px) {
+            main {
+                flex-direction: row; /* Su schermi più grandi, le colonne affiancate */
+                align-items: flex-start; /* Allinea il contenuto in alto */
+                justify-content: space-between; /* Distribuisce lo spazio tra le colonne */
+            }
+        }
+
+        .left-menu, .right-accessories { /* Stili comuni per i menu laterali */
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%; /* Piena larghezza su mobile */
+            max-width: 300px; /* Larghezza massima dei menu su desktop */
+            box-sizing: border-box;
+        }
+
+        @media (min-width: 768px) {
+            .left-menu, .right-accessories {
+                flex-shrink: 0; /* Non si restringono */
+            }
+        }
+
+        .center-content { /* Nuovo contenitore per immagine e dettagli */
+            flex-grow: 1; /* Occupa lo spazio rimanente al centro */
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Centra l'immagine e le opzioni all'interno di quest'area */
+            width: 100%; /* Piena larghezza su mobile */
+            box-sizing: border-box;
+        }
+
+        .image-container {
+            text-align: center;
+            margin-bottom: 30px;
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 100%; /* Rende il contenitore responsive */
+            box-sizing: border-box;
+        }
+
+        .image-container img {
+            max-width: 100%; /* Rende l'immagine responsive */
+            height: auto;
+            display: block; /* Rimuove lo spazio extra sotto l'immagine */
+            margin: 0 auto; /* Centra l'immagine */
+            border-radius: 4px;
+        }
+
+        .image-caption {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .configurator-options, .accessories-section, .summary-display-area, .materials-display-area { /* Stili per le sezioni interne */
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px; /* Limita la larghezza per una migliore leggibilità */
+            box-sizing: border-box;
+        }
+
+        .configurator-options { /* Spazio sopra la sezione di configurazione */
+            margin-top: 20px;
+            display: flex; /* Per centrare i pulsanti */
+            flex-direction: column; /* Impila i pulsanti verticalmente */
+            gap: 15px; /* Spazio tra i pulsanti */
+            justify-content: center; /* Centra orizzontalmente */
+            align-items: center; /* Centra verticalmente */
+            min-height: 100px; /* Altezza minima per il blocco dei pulsanti */
+        }
+
+        .left-menu > div { /* Spazio tra i dropdown del menu sinistro */
+            margin-top: 20px;
+        }
+        .left-menu > div:first-of-type {
+            margin-top: 0; /* Nessun margine superiore per il primo elemento */
+        }
+
+        .accessories-section > div { /* Spazio tra i dropdown degli accessori */
+            margin-top: 20px;
+        }
+        .accessories-section > div:first-child {
+            margin-top: 0; /* Nessun margine superiore per il primo elemento */
+        }
+
+
+        .dropdown-label, .input-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .dropdown-select, .input-field {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+            background-color: #f9f9f9;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+        }
+        
+        .dropdown-select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M287%2C114.1L146.2%2C254.9L5.4%2C114.1H287z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat;
+            background-position: right 10px top 50%;
+            background-size: 12px auto;
+        }
+
+        .action-button { /* Stile generico per i pulsanti di azione */
+            background-color: #4CAF50; /* Un bel verde */
+            color: white;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 8px; /* Angoli arrotondati */
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-decoration: none; /* Rimuove sottolineatura se usato come link */
+            display: inline-block; /* Per applicare padding e margin correttamente */
+            width: 80%; /* Occupa una buona parte della larghezza del contenitore */
+            max-width: 300px; /* Limita la larghezza massima */
+        }
+
+        .action-button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px); /* Effetto leggero al passaggio del mouse */
+        }
+
+        .action-button:active {
+            background-color: #3e8e41;
+            transform: translateY(0);
+        }
+
+        .save-button {
+            background-color: #2196F3; /* Blu per il pulsante Salva */
+        }
+
+        .save-button:hover {
+            background-color: #1976D2;
+        }
+
+        .save-button:active {
+            background-color: #1565C0;
+        }
+
+        /* Stili per le nuove aree di visualizzazione */
+        .summary-display-area, .materials-display-area {
+            display: none; /* Inizialmente nascoste */
+            margin-top: 20px;
+        }
+
+        .summary-display-area h2, .materials-display-area h2 {
+            color: #3f51b5;
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .summary-details p {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .summary-details strong {
+            color: #555;
+            display: inline-block;
+            min-width: 150px; /* Allinea i due punti */
+        }
+
+        .materials-summary {
+            margin-top: 30px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        .materials-summary h3 {
+            color: #2196F3;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .materials-summary ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .materials-summary li {
+            background-color: #e3f2fd;
+            margin-bottom: 8px;
+            padding: 12px;
+            border-radius: 5px;
+            border-left: 4px solid #2196F3;
+            font-size: 1em;
+        }
+
+        /* Stili specifici per la lista materiali */
+        .materials-container-list { /* Nuovo nome per evitare conflitti */
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            /* margin-top: 30px; Rimosso, gestito dal margin-top del .materials-display-area */
+            width: 100%;
+            max-width: 800px; /* Larghezza massima per il contenuto */
+            box-sizing: border-box;
+        }
+
+        .materials-container-list ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .materials-container-list li {
+            background-color: #e8eaf6;
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 5px solid #3f51b5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1em;
+        }
+
+        .material-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .material-name {
+            flex-grow: 1;
+        }
+
+        .quantity-input {
+            width: 70px;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+            margin-right: 10px;
+        }
+
+        .add-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .add-button:hover {
+            background-color: #45a049;
+        }
+
+        .added-list-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top: 30px; /* Mantieni margine per separare dalla lista disponibile */
+            width: 100%;
+            max-width: 800px;
+            box-sizing: border-box;
+        }
+
+        .added-list-container h2 {
+            color: #3f51b5;
+            text-align: center;
+        }
+
+        .added-list ul {
+            list-style: decimal; /* Numerazione per la lista aggiunta */
+            padding-left: 20px;
+        }
+
+        .added-list li {
+            background-color: #e3f2fd; /* Sfondo diverso per la lista aggiunta */
+            border-left: 5px solid #2196F3;
+        }
+
+        /* Stili per i pulsanti nella schermata di riepilogo */
+        #summary-display-area .action-button,
+        #summary-display-area .back-to-config-button,
+        #summary-display-area .export-pdf-button { /* Aggiunto il nuovo pulsante */
+            padding: 10px 20px; /* Rendi i pulsanti più piccoli */
+            font-size: 1em;    /* Riduci la dimensione del font */
+            width: 48%;        /* Circa metà larghezza per stare sulla stessa riga con un po' di spazio */
+            max-width: 250px;  /* Limita la larghezza massima per non farli diventare troppo grandi */
+            margin-top: 0 !important; /* Rimuovi il margine superiore per allinearli */
+            box-sizing: border-box; /* Assicura che padding e border siano inclusi nella larghezza */
+        }
+
+        /* Modifica il contenitore dei pulsanti per allinearli sulla stessa riga */
+        #summary-display-area.configurator-options {
+            flex-direction: row; /* Allinea i pulsanti in una riga */
+            flex-wrap: wrap;     /* Permetti ai pulsanti di andare a capo su schermi piccoli */
+            justify-content: center; /* Centra i pulsanti orizzontalmente */
+            gap: 15px;           /* Spazio tra i pulsanti */
+        }
+
+        /* Stili per la descrizione generata */
+        .generated-description-container {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #e8f5e9; /* Verde chiaro per lo sfondo */
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-left: 5px solid #4CAF50; /* Bordo verde a sinistra */
+            color: #333;
+            font-size: 1em;
+            line-height: 1.6;
+            text-align: left;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .generated-description-container h3 {
+            color: #4CAF50;
+            margin-top: 0;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3f51b5;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin: 10px auto;
+            display: none; /* Hidden by default */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+
+        footer {
+            background-color: #3f51b5;
+            color: white;
+            text-align: center;
+            padding: 1em 0;
+            margin-top: auto;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+        }
+    </style>
+    <!-- Collega il manifest della PWA (per l'anteprima lo simuliamo) -->
+    <link rel="manifest" href="data:application/json;base64,eyJpY29ucyI6W3sic2l6ZXMiOiI3Mng3MiIsInNyYyI6Imljb25zL2ljb24tNzJ4NzIucG5nIiwidHlwZSI6ImltYWdlL3BuZyJ9LHsic2l6ZXMiOiI5Nng5NiIsInNyYyI6Imljb25zL2ljb24tOTZ4OTYucG5nIiwidHlwZSI6ImltYWdlL3BuZyJ9LHsic2l6ZXMiOiIxMjh4MTI4Iiwic3JjIjoiaWNvbnMvaWNuLTEyOHgxMjgucG5nIiwidHlwZSI6ImltYWdlL3BuZyJ9LHsic2l6ZXMiOiIxNDR4MTQ0Iiwic3JjIjoiaWNvbnMvaWNuLTE0NHgxNDQucG5nIiwidHlwZSI6ImltYWdlL3BuZyJ9LHsic2l6ZXMiOiIxNTJ4MTUyIiwic3JjIjoiaWNvbnMvaWNuLTE1MngxNTIucG5nIiwidHlwZSI6ImltYWdlL3BuZyJ9LHsic2l6ZXMiOiIxOTJ4MTkyIiwic3JjIjoiaWNvbnMvaWNuLTE5MngxOTIucG5nIiwidHlwZSI6ImltYWdlL3BuZyJ9LHsic2l6ZXMiOiIzODR4Mzg0Iiwic3JjIjoiaWNvbnMvaWNuLTM4NHgzODQucG%2FucG5nIiwidHlwZSI6ImltYWdlL3BuZyJ9LHsic2l6ZXMiOiI1MTJ4NTEyIiwic3JjIjoiaWNvbnMvaWNuLTUxMng1MTIucG5nIiwidHlwZSI6ImltYWdlL3BuZyJ9XSwibmFtZSI6IkNvbmZpZ3VyYXRvcmUgU2VyYmF0b2lvIiwic2hvcnRfbmFtZSI6IlNlcmJhdG9pbyIsInN0YXJ0X3VybCI6Ii4vaW5kZXguaHRtbCIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiNmZmZmZmYiLCJ0aGVtZV9jb2xvciI6IiMzZjUxYjUiLCJkZXNjcmlwdGlvbiI6IkNvbmZpZ3VyYSBpbCB0dW8gc2VyYmF0b2lvIHBlciBhcmiaWNvbXByZXNzYS4ifQ==">
     <!-- Icona per dispositivi iOS -->
     <link rel="apple-touch-icon" href="icons/icon-192x192.png">
     <!-- Colore della barra di stato per Android (Chrome) -->
@@ -369,12 +776,622 @@
         <p>&copy; 2025 Il Tuo Configuratore Serbatoio</p>
     </footer>
 
-    <!-- Link al JavaScript esterno -->
-    <script src="./script.js"></script>
+    <!-- Inclusione diretta del JavaScript per l'anteprima -->
     <script>
-      // Il codice di registrazione del Service Worker è stato rimosso da qui
-      // per evitare errori nell'ambiente di anteprima.
-      // Funzionerà correttamente quando l'app sarà ospitata su un server HTTPS.
+        // Logica JavaScript per il configuratore
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM completamente caricato e analizzato.');
+            
+            // Elementi del configuratore
+            const barOptionSelect = document.getElementById('bar-option');
+            const numInletsSelect = document.getElementById('num-inlets');
+            const inletDiameterSelect = document.getElementById('inlet-diameter');
+            const topInletSelect = document.getElementById('top-inlet');
+            const bottomInletSelect = document.getElementById('bottom-inlet');
+            const numFrontInletsSelect = document.getElementById('num-front-inlets');
+            const bypassOptionSelect = document.getElementById('bypass-option');
+            const compressorOutletSelect = document.getElementById('compressor-outlet');
+            const compressorOutlet2Container = document.getElementById('compressor-outlet-2-container'); // Nuovo contenitore
+            const compressorOutlet2Select = document.getElementById('compressor-outlet-2'); // Nuovo select
+            const manometerOptionSelect = document.getElementById('manometer-option');
+            const safetyValveOptionSelect = document.getElementById('safety-valve-option');
+            const drainerOptionSelect = document.getElementById('drainer-option');
+            const plantInletSelect = document.getElementById('plant-inlet'); // New: Ingresso Impianto
+            
+            // Nuovi elementi per il diametro manometro
+            const manometerDiameterContainer = document.getElementById('manometer-diameter-container');
+            const manometerDiameterOptionSelect = document.getElementById('manometer-diameter-option');
+
+            // Nuovi elementi per il tipo di scaricatore
+            const drainerTypeContainer = document.getElementById('drainer-type-container');
+            const drainerTypeOptionSelect = document.getElementById('drainer-type-option');
+
+            // Nuovo elemento per il filtro Ottone (corretto)
+            const ottoneFilterOptionSelect = document.getElementById('ottone-filter-option');
+            const ottoneFilterContainer = document.getElementById('ottine-filter-container'); // Riferimento al contenitore (ID HTML precedente, da correggere se necessario)
+
+            // Nuovi elementi per l'ingresso frontale
+            const frontInletDiameterContainer = document.getElementById('front-inlet-diameter-container');
+            const frontInletDiameterOptionSelect = document.getElementById('front-inlet-diameter-option');
+
+            // Nuovo elemento per Diametro Ingresso serbatoio Lato Compressore
+            const compressorInletDiameterContainer = document.getElementById('compressor-inlet-diameter-container');
+            const compressorInletDiameterSelect = document.getElementById('compressor-inlet-diameter');
+
+            // Nuovo elemento per Numero Compressori
+            const numCompressorsSelect = document.getElementById('num-compressors'); // Nuovo elemento
+
+            // Viste principali
+            const configuratorView = document.getElementById('configurator-view');
+            const summaryDisplayArea = document.getElementById('summary-display-area');
+            const materialsDisplayArea = document.getElementById('materials-display-area');
+
+            // Elementi del riepilogo
+            const configurationDetailsDiv = document.getElementById('configuration-details');
+            const estimatedMaterialsList = document.getElementById('estimated-materials-list');
+            
+            // Elementi della lista materiali
+            const tappiInoxQtyInput = document.getElementById('tappi-inox-qty');
+            const tappiInoxAddButton = document.querySelector('#materials-display-area .add-button[data-material="Tappi inox"]');
+            const addedMaterialsList = document.getElementById('added-materials-list');
+            
+            // Pulsanti
+            const openMaterialsListButton = document.getElementById('open-materials-list-button');
+            const saveConfigurationButton = document.getElementById('save-configuration-button');
+            const backFromSummaryButton = document.getElementById('back-from-summary-button');
+            const backFromMaterialsButton = document.getElementById('back-from-materials-button');
+            const updateConfigurationButton = document.getElementById('update-configuration-button'); // Pulsante Aggiorna
+            const exportPdfButton = document.getElementById('export-pdf-button'); // Nuovo pulsante Esporta PDF
+
+            // Mappa dei nomi dei parametri URL ai nomi visualizzati (per il riepilogo)
+            const paramDisplayNames = {
+                bar: 'Bar',
+                numInlets: 'N° di ingressi',
+                compressorInletDiameter: 'Diametro Ingresso serbatoio Lato Compressore', 
+                inletDiameter: 'Diametro Ingressi serbatoio', 
+                topInlet: 'Ingresso superiore',
+                bottomInlet: 'Ingresso inferiore',
+                numFrontInlets: 'N° di ingressi frontali',
+                frontInletDiameter: 'Diametro Ingresso Frontale',
+                bypass: 'By-pass',
+                plantInlet: 'Ingresso Impianto', 
+                numCompressors: 'Numero Compressori', 
+                compressorOutlet: 'Uscita compressore 1', 
+                compressorOutlet2: 'Uscita compressore 2', 
+                manometer: 'Manometro',
+                manometerDiameter: 'Diametro Manometro',
+                safetyValve: 'Valvola di sicurezza',
+                drainer: 'Scaricatore',
+                drainerType: 'Tipo di Scaricatore',
+                ottoneFilter: 'Filtro Ottone'
+            };
+
+            // Funzione per raccogliere tutti i valori dei dropdown
+            function collectConfiguration() {
+                const config = {
+                    bar: barOptionSelect ? barOptionSelect.value : '',
+                    numInlets: numInletsSelect ? numInletsSelect.value : '',
+                    compressorInletDiameter: (numInletsSelect && numInletsSelect.value !== '') ? (compressorInletDiameterSelect ? compressorInletDiameterSelect.value : '') : '',
+                    inletDiameter: inletDiameterSelect ? inletDiameterSelect.value : '',
+                    topInlet: topInletSelect ? topInletSelect.value : '',
+                    bottomInlet: bottomInletSelect ? bottomInletSelect.value : '',
+                    numFrontInlets: numFrontInletsSelect ? numFrontInletsSelect.value : '',
+                    frontInletDiameter: (numFrontInletsSelect && numFrontInletsSelect.value === '1') ? (frontInletDiameterOptionSelect ? frontInletDiameterOptionSelect.value : '') : '',
+                    bypass: bypassOptionSelect ? bypassOptionSelect.value : '',
+                    plantInlet: plantInletSelect ? plantInletSelect.value : '', 
+                    numCompressors: numCompressorsSelect ? numCompressorsSelect.value : '', 
+                    compressorOutlet: compressorOutletSelect ? compressorOutletSelect.value : '', 
+                    manometer: manometerOptionSelect ? manometerOptionSelect.value : '',
+                    manometerDiameter: (manometerOptionSelect && manometerOptionSelect.value === 'si') ? (manometerDiameterOptionSelect ? manometerDiameterOptionSelect.value : '') : '',
+                    safetyValve: safetyValveOptionSelect ? safetyValveOptionSelect.value : '',
+                    drainer: drainerOptionSelect ? drainerOptionSelect.value : '',
+                    drainerType: (drainerOptionSelect && drainerOptionSelect.value === 'si') ? (drainerTypeOptionSelect ? drainerTypeOptionSelect.value : '') : '',
+                    ottoneFilter: ottoneFilterOptionSelect ? ottoneFilterOptionSelect.value : ''
+                };
+
+                // Aggiungi il secondo compressore solo se il numero di compressori è 2
+                if (config.numCompressors === '2') {
+                    config.compressorOutlet2 = compressorOutlet2Select ? compressorOutlet2Select.value : '';
+                }
+                return config;
+            }
+
+            // Funzione per formattare i valori in pollici per la visualizzazione
+            function formatInchValue(value) {
+                if (!value) return '';
+                // Convert string values to their common fractional/decimal representation for display
+                if (value === '1.5') return '1 1/2"';
+                if (value === '1.25') return '1 1/4"';
+                if (value === '0.75') return '3/4"';
+                if (value === '0.5') return '1/2"';
+                if (value === '0.375') return '3/8"';
+                if (value === '0.25') return '1/4"';
+                return `${value}"`;
+            }
+
+            // Funzione per convertire i valori in pollici (stringa) in numeri decimali per i calcoli
+            function parseInchToDecimal(value) {
+                if (!value) return null;
+                // Handle common fractional representations if they were in the value string
+                if (value === '1 1/2') return 1.5;
+                if (value === '1 1/4') return 1.25;
+                if (value === '3/4') return 0.75;
+                if (value === '1/2') return 0.5;
+                if (value === '3/8') return 0.375;
+                if (value === '1/4') return 0.25;
+                return parseFloat(value); // For direct decimal or integer strings
+            }
+
+
+            // Funzione per generare e mostrare il riepilogo
+            function showSummary() {
+                const config = collectConfiguration();
+                
+                // Pulisci le aree prima di riempirle
+                configurationDetailsDiv.innerHTML = '';
+                estimatedMaterialsList.innerHTML = '';
+
+                // Popola i dettagli della configurazione
+                let detailsHtml = '';
+                for (const key in config) {
+                    if (config.hasOwnProperty(key) && config[key] !== '') { // Mostra solo le opzioni selezionate
+                        let displayValue = config[key];
+                        // Modifica la visualizzazione per Tipo di Scaricatore se è ATS
+                        if (key === 'drainerType' && config[key] === 'ATS') {
+                            displayValue = 'Kit ATS';
+                        }
+                        // Non mostrare il filtro ottone se è parte del Kit ATS
+                        if (key === 'ottoneFilter' && config.drainerType === 'ATS') {
+                            continue; // Salta l'aggiunta di questa riga
+                        }
+                        // Formatta i valori in pollici per la visualizzazione nel riepilogo
+                        if (['inletDiameter', 'topInlet', 'bottomInlet', 'frontInletDiameter', 'compressorOutlet', 'compressorOutlet2', 'plantInlet', 'manometerDiameter', 'safetyValve', 'compressorInletDiameter'].includes(key)) {
+                            displayValue = formatInchValue(config[key]);
+                        }
+                        detailsHtml += `<p><strong>${paramDisplayNames[key] || key}:</strong> ${displayValue}</p>`;
+                    }
+                }
+                configurationDetailsDiv.innerHTML = detailsHtml;
+
+                // Logica per la stima dei materiali
+                const materials = [];
+
+                // Logica per Tappi inox (basata sulla configurazione attuale)
+                let tappiInoxQty = 0;
+                let tappiInoxName = 'Tappi inox';
+                const numInlets = config.numInlets;
+                const numCompressors = config.numCompressors;
+
+                // Nuova logica per Tappi inox
+                if (numInlets === '3' && numCompressors === '2') {
+                    tappiInoxQty = 0;
+                } else if (numInlets === '4' && numCompressors === '2') {
+                    tappiInoxQty = 1;
+                } else if (numInlets === '2') {
+                    tappiInoxQty = 0;
+                } else if (numInlets === '3') {
+                    tappiInoxQty = 1;
+                } else if (numInlets === '4') {
+                    tappiInoxQty = 2;
+                }
+                
+                if (config.inletDiameter && config.inletDiameter !== '') {
+                    tappiInoxName += ` ${formatInchValue(config.inletDiameter)}`;
+                }
+                materials.push({ name: tappiInoxName, quantity: tappiInoxQty });
+
+                // Altri materiali basati sulle selezioni (esempio)
+                if (config.manometer === 'si') {
+                    let manometerText = 'Manometro';
+                    if (config.manometerDiameter && config.manometerDiameter !== '') {
+                        manometerText += ` (${formatInchValue(config.manometerDiameter)})`;
+                    }
+                    materials.push({ name: manometerText, quantity: 1 });
+
+                    // Nuova logica per riduzione manometro se il diametro del manometro è 1/4"
+                    if (config.manometerDiameter === '0.25') { // If manometer is 1/4"
+                        materials.push({ name: 'Riduzione 3/8 - 1/4', quantity: 1 });
+                    }
+
+                    // Existing logic for niples, T, rubinetto, attacco rapido if front inlet is 1
+                    if (config.numFrontInlets === '1' && config.frontInletDiameter) {
+                        const frontInletDiameterFormatted = formatInchValue(config.frontInletDiameter);
+                        materials.push({ name: `Niples ${frontInletDiameterFormatted}`, quantity: 1 });
+                        materials.push({ name: `T ${frontInletDiameterFormatted}`, quantity: 1 });
+                        materials.push({ name: `Rubinetto minisfera MF ${frontInletDiameterFormatted}`, quantity: 1 }); // Renamed
+                        materials.push({ name: `Attacco rapido universale ${frontInletDiameterFormatted}`, quantity: 1 });
+                    }
+                }
+                if (config.safetyValve && config.safetyValve !== '') {
+                    materials.push({ name: `Valvola di sicurezza (${formatInchValue(config.safetyValve)})`, quantity: 1 });
+                    // NUOVA LOGICA: Riduzione/Niples per Valvola di Sicurezza
+                    const topInlet = config.topInlet;
+                    const safetyValve = config.safetyValve;
+
+                    if (topInlet && safetyValve) {
+                        const topInletDecimal = parseInchToDecimal(topInlet);
+                        const safetyValveDecimal = parseInchToDecimal(safetyValve);
+
+                        if (topInletDecimal > safetyValveDecimal) {
+                            // Necessaria una riduzione
+                            if (safetyValveDecimal >= 1.0) { // Se la valvola è 1" o maggiore
+                                materials.push({ name: `Riduzione ${formatInchValue(topInlet)} - ${formatInchValue(safetyValve)}`, quantity: 1 });
+                            } else { // Se la valvola è minore di 1"
+                                materials.push({ name: `Riduzione ${formatInchValue(topInlet)} - 1"`, quantity: 1 });
+                                materials.push({ name: `Riduzione 1" - ${formatInchValue(safetyValve)}`, quantity: 1 });
+                            }
+                        }
+                        // Se topInletDecimal === safetyValveDecimal, non aggiungiamo nulla (come richiesto)
+                        // Se topInletDecimal < safetyValveDecimal, non aggiungiamo nulla per questa logica
+                    }
+                }
+                if (config.drainer === 'si') {
+                    // Se è "Kit ATS", il filtro ottone è incluso, quindi non aggiungere separatamente
+                    if (config.drainerType === 'ATS') {
+                        materials.push({ name: 'Scaricatore (Kit ATS)', quantity: 1 });
+                    } else {
+                        let drainerText = 'Scaricatore';
+                        if (config.drainerType && config.drainerType !== '') {
+                            drainerText += ` (${config.drainerType})`;
+                        }
+                        materials.push({ name: drainerText, quantity: 1 });
+                    }
+                    // Aggiungi la valvola 1/2 MF, Curva 1/2 MF e Bocchettone 1/2 MF se lo scaricatore è "Sì"
+                    materials.push({ name: 'Valvola 1/2 MF', quantity: 1 }); 
+                    materials.push({ name: 'Curva 1/2 MF', quantity: 1 });
+                    materials.push({ name: 'Bocchettone 1/2 MF', quantity: 1 });
+                }
+                // Aggiungi Filtro Ottone se selezionato E NON è un kit ATS
+                if (config.ottoneFilter === 'si' && config.drainerType !== 'ATS') {
+                    materials.push({ name: 'Filtro Ottone', quantity: 1 }); 
+                }
+
+                // Aggiungi cavo e spine se il tipo di scaricatore è ATS o Beko
+                if (config.drainerType === 'ATS' || config.drainerType === 'Beko') {
+                    materials.push({ name: '10 mt di cavo 2x1,5mm', quantity: 1 });
+                    materials.push({ name: 'Spina industriale', quantity: 1 });
+                    materials.push({ name: 'Spina civile', quantity: 1 });
+                }
+
+                // Aggiungi valvola in base al valore di Uscita compressore 1
+                if (config.compressorOutlet && config.compressorOutlet !== '') {
+                    materials.push({ name: `Valvola ${formatInchValue(config.compressorOutlet)} pollici M/F (Compressore 1)`, quantity: 1 }); 
+                }
+                // Aggiungi valvola in base al valore di Uscita compressore 2
+                if (config.compressorOutlet2 && config.compressorOutlet2 !== '') {
+                    materials.push({ name: `Valvola ${formatInchValue(config.compressorOutlet2)} pollici M/F (Compressore 2)`, quantity: 1 }); 
+                }
+
+
+                // Logica per il By-pass
+                if (config.bypass === 'si') {
+                    const plantInletFormatted = formatInchValue(config.plantInlet);
+                    materials.push({ name: `T ${plantInletFormatted}`, quantity: 2 });
+                    materials.push({ name: `Niples ${plantInletFormatted}`, quantity: 3 });
+                    materials.push({ name: `Valvole MF ${plantInletFormatted}`, quantity: 3 });
+                }
+
+                // NUOVA LOGICA: Riduzione/Niples tra Diametro Ingresso serbatoio Lato Compressore e Uscita compressore
+                const compressorInlet = config.compressorInletDiameter;
+                const compressorOutlet = config.compressorOutlet;
+
+                if (compressorInlet && compressorOutlet) {
+                    const inletDecimal = parseInchToDecimal(compressorInlet);
+                    const outletDecimal = parseInchToDecimal(compressorOutlet);
+
+                    if (inletDecimal > outletDecimal) {
+                        // Necessaria una riduzione
+                        if (outletDecimal >= 1.0) { // Se la valvola è 1" o maggiore
+                            materials.push({ name: `Riduzione ${formatInchValue(compressorInlet)} - ${formatInchValue(compressorOutlet)}`, quantity: 1 });
+                        } else { // Se la valvola è minore di 1"
+                            materials.push({ name: `Riduzione ${formatInchValue(compressorInlet)} - 1"`, quantity: 1 });
+                            materials.push({ name: `Riduzione 1" - ${formatInchValue(compressorOutlet)}`, quantity: 1 });
+                        }
+                    } else if (inletDecimal === outletDecimal) {
+                        // Sono uguali, serve un niples
+                        materials.push({ name: `Niples ${formatInchValue(compressorInlet)}`, quantity: 1 });
+                    }
+                    // Se inletDecimal < outletDecimal, non aggiungiamo nulla per questa logica
+                }
+                // Logica per il secondo compressore (se presente)
+                if (config.numCompressors === '2' && compressorInlet && config.compressorOutlet2) {
+                    const inletDecimal = parseInchToDecimal(compressorInlet);
+                    const outlet2Decimal = parseInchToDecimal(config.compressorOutlet2);
+
+                    if (inletDecimal > outlet2Decimal) {
+                        if (outlet2Decimal >= 1.0) {
+                            materials.push({ name: `Riduzione ${formatInchValue(compressorInlet)} - ${formatInchValue(config.compressorOutlet2)} (Compressore 2)`, quantity: 1 });
+                        } else {
+                            materials.push({ name: `Riduzione ${formatInchValue(compressorInlet)} - 1" (Compressore 2)`, quantity: 1 });
+                            materials.push({ name: `Riduzione 1" - ${formatInchValue(config.compressorOutlet2)} (Compressore 2)`, quantity: 1 });
+                        }
+                    } else if (inletDecimal === outlet2Decimal) {
+                        materials.push({ name: `Niples ${formatInchValue(compressorInlet)} (Compressore 2)`, quantity: 1 });
+                    }
+                }
+
+
+                // Popola la lista dei materiali stimati
+                if (materials.length > 0) {
+                    materials.forEach(item => {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = `${item.name}: ${item.quantity}`;
+                        estimatedMaterialsList.appendChild(listItem);
+                    });
+                } else {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = 'Nessun materiale stimato in base alle selezioni.';
+                    estimatedMaterialsList.appendChild(listItem);
+                }
+
+                // Nascondi le altre viste e mostra il riepilogo
+                configuratorView.style.display = 'none';
+                materialsDisplayArea.style.display = 'none';
+                summaryDisplayArea.style.display = 'block';
+            }
+
+            // Funzione per mostrare la lista materiali
+            function showMaterialsList() {
+                // Pulisci la lista degli elementi aggiunti ogni volta che apri
+                addedMaterialsList.innerHTML = ''; 
+
+                // Applica la logica per Tappi inox al caricamento della lista
+                const numInlets = numInletsSelect ? numInletsSelect.value : '';
+                const numCompressors = numCompressorsSelect ? numCompressorsSelect.value : ''; // Get numCompressors
+                let tappiInoxCalculatedQty = 0; // Use a temporary variable for calculation
+
+                // Nuova logica per Tappi inox
+                if (numInlets === '3' && numCompressors === '2') {
+                    tappiInoxCalculatedQty = 0;
+                } else if (numInlets === '4' && numCompressors === '2') {
+                    tappiInoxCalculatedQty = 1;
+                } else if (numInlets === '2') {
+                    tappiInoxCalculatedQty = 0;
+                } else if (numInlets === '3') {
+                    tappiInoxCalculatedQty = 1;
+                } else if (numInlets === '4') {
+                    tappiInoxCalculatedQty = 2;
+                }
+                // Default to 0 if none of the above, which is already handled by initialization.
+
+                if (tappiInoxQtyInput) {
+                    tappiInoxQtyInput.value = tappiInoxCalculatedQty;
+                    // Disable if quantity is 0 based on logic, otherwise enable
+                    if (tappiInoxCalculatedQty === 0) {
+                        tappiInoxQtyInput.disabled = true;
+                        if (tappiInoxAddButton) tappiInoxAddButton.disabled = true;
+                    } else {
+                        tappiInoxQtyInput.disabled = false;
+                        if (tappiInoxAddButton) tappiInoxAddButton.disabled = false;
+                    }
+                }
+
+                // Nascondi le altre viste e mostra la lista materiali
+                configuratorView.style.display = 'none';
+                summaryDisplayArea.style.display = 'none';
+                materialsDisplayArea.style.display = 'block';
+            }
+
+            // Funzione per tornare alla vista del configuratore principale
+            function showConfigurator() {
+                summaryDisplayArea.style.display = 'none';
+                materialsDisplayArea.style.display = 'none';
+                configuratorView.style.display = 'block';
+            }
+
+            // Event Listener per il pulsante "Apri Lista Materiali"
+            if (openMaterialsListButton) {
+                openMaterialsListButton.addEventListener('click', showMaterialsList);
+            }
+
+            // Event Listener per il pulsante "Salva Configurazione"
+            if (saveConfigurationButton) {
+                saveConfigurationButton.addEventListener('click', showSummary);
+            }
+
+            // Event Listener per il pulsante "Torna al Configuratore" dalla vista Riepilogo
+            if (backFromSummaryButton) {
+                    backFromSummaryButton.addEventListener('click', showConfigurator);
+            }
+
+            // Event Listener per il pulsante "Torna al Configuratore" dalla vista Lista Materiali
+            if (backFromMaterialsButton) {
+                backFromMaterialsButton.addEventListener('click', showConfigurator);
+            }
+
+            // Event Listener per il nuovo pulsante "Aggiorna" nella schermata di riepilogo
+            if (updateConfigurationButton) {
+                updateConfigurationButton.addEventListener('click', showSummary); // Richiama showSummary per aggiornare il riepilogo
+            }
+
+            // Aggiungi event listener a tutti i pulsanti "Aggiungi" nella lista materiali
+            document.querySelectorAll('#materials-display-area .add-button').forEach(button => {
+                button.addEventListener('click', (event) => {
+                    const materialName = event.target.dataset.material;
+                    const quantityInputId = event.target.dataset.id;
+                    const quantityInput = document.getElementById(quantityInputId);
+                    const quantity = parseInt(quantityInput.value, 10);
+
+                    if (quantity > 0) {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = `${materialName}: ${quantity}`;
+                        addedMaterialsList.appendChild(listItem);
+                    }
+                    quantityInput.value = 0; // Resetta la quantità dopo l'aggiunta
+                });
+            });
+
+            // Logica per mostrare/nascondere il menu a tendina del diametro manometro
+            if (manometerOptionSelect) {
+                manometerOptionSelect.addEventListener('change', (event) => {
+                    const selectedValue = event.target.value;
+                    if (selectedValue === 'si') {
+                        manometerDiameterContainer.style.display = 'block';
+                    } else {
+                        manometerDiameterContainer.style.display = 'none';
+                        manometerDiameterOptionSelect.value = ''; // Resetta il valore quando nascosto
+                    }
+                    console.log('Opzione Manometro selezionata:', selectedValue);
+                });
+            }
+
+            // Event listener per il diametro del manometro
+            if (manometerDiameterOptionSelect) {
+                manometerDiameterOptionSelect.addEventListener('change', (event) => {
+                    console.log('Diametro Manometro selezionato:', event.target.value + '"');
+                });
+            }
+
+            // Logica per mostrare/nascondere il menu a tendina del tipo di scaricatore
+            if (drainerOptionSelect) {
+                drainerOptionSelect.addEventListener('change', (event) => {
+                    const selectedValue = event.target.value;
+                    if (selectedValue === 'si') {
+                        drainerTypeContainer.style.display = 'block';
+                        // Quando lo scaricatore è 'si', abilita il filtro ottone e resettalo
+                        ottoneFilterOptionSelect.disabled = false;
+                        ottoneFilterOptionSelect.value = ''; 
+                    } else {
+                        drainerTypeContainer.style.display = 'none';
+                        drainerTypeOptionSelect.value = ''; // Resetta il valore quando nascosto
+                        // Quando lo scaricatore è 'no', disabilita il filtro ottone e resettalo
+                        ottoneFilterOptionSelect.value = ''; 
+                        ottoneFilterOptionSelect.disabled = false; // Lascialo abilitato, ma resettato
+                    }
+                    console.log('Opzione Scaricatore selezionata:', selectedValue);
+                });
+            }
+
+            // Event listener per il tipo di scaricatore
+            if (drainerTypeOptionSelect) {
+                drainerTypeOptionSelect.addEventListener('change', (event) => {
+                    const selectedValue = event.target.value;
+                    if (selectedValue === 'ATS') {
+                        ottoneFilterOptionSelect.value = 'si';
+                        ottoneFilterOptionSelect.disabled = true; // Disabilita se ATS
+                    } else if (selectedValue === 'Beko' || selectedValue === 'Termodinamico') {
+                        ottoneFilterOptionSelect.value = 'si';
+                        ottoneFilterOptionSelect.disabled = false; // Abilita se Beko o Termodinamico
+                    } else {
+                        ottoneFilterOptionSelect.value = ''; // Resetta se nessuna selezione specifica
+                        ottoneFilterOptionSelect.disabled = false; // Abilita
+                    }
+                    console.log('Tipo di Scaricatore selezionato:', selectedValue);
+                });
+            }
+
+            // Event listener per il filtro Ottone
+            if (ottoneFilterOptionSelect) {
+                ottoneFilterOptionSelect.addEventListener('change', (event) => {
+                    console.log('Filtro Ottone selezionato:', event.target.value);
+                });
+            }
+
+            // Logica per mostrare/nascondere il menu a tendina del diametro ingresso frontale
+            if (numFrontInletsSelect) {
+                numFrontInletsSelect.addEventListener('change', (event) => {
+                    const selectedValue = event.target.value;
+                    if (selectedValue === '1') {
+                        frontInletDiameterContainer.style.display = 'block';
+                    } else {
+                        frontInletDiameterContainer.style.display = 'none';
+                        frontInletDiameterOptionSelect.value = ''; // Resetta il valore quando nascosto
+                    }
+                    console.log('N° di ingressi frontali selezionato:', selectedValue);
+                });
+            }
+
+            // Event listener per il diametro ingresso frontale
+            if (frontInletDiameterOptionSelect) {
+                frontInletDiameterOptionSelect.addEventListener('change', (event) => {
+                    console.log('Diametro Ingresso Frontale selezionato:', event.target.value + '"');
+                });
+            }
+
+            // Event listener per Ingresso Impianto
+            if (plantInletSelect) {
+                plantInletSelect.addEventListener('change', (event) => {
+                    console.log('Ingresso Impianto selezionato:', event.target.value + '"');
+                });
+            }
+
+            // LOGICA: Mostra/nascondi Diametro Ingresso serbatoio Lato Compressore in base a N° di ingressi
+            if (numInletsSelect) {
+                numInletsSelect.addEventListener('change', (event) => {
+                    const selectedValue = event.target.value;
+                    // Mostra il campo "Diametro Ingresso serbatoio Lato Compressore" solo se "N° di ingressi" non è vuoto
+                    if (selectedValue !== '') { 
+                        compressorInletDiameterContainer.style.display = 'block';
+                    } else {
+                        compressorInletDiameterContainer.style.display = 'none';
+                        compressorInletDiameterSelect.value = ''; // Resetta il valore quando nascosto
+                    }
+                    console.log('N° di ingressi selezionato:', selectedValue);
+                });
+            }
+
+            // Event listener per Numero Compressori (nuovo)
+            if (numCompressorsSelect) {
+                numCompressorsSelect.addEventListener('change', (event) => {
+                    const selectedValue = event.target.value;
+                    if (selectedValue === '2') {
+                        compressorOutlet2Container.style.display = 'block'; // Mostra il secondo menu
+                    } else {
+                        compressorOutlet2Container.style.display = 'none'; // Nascondi il secondo menu
+                        compressorOutlet2Select.value = ''; // Resetta il valore
+                    }
+                    console.log('Numero Compressori selezionato:', selectedValue);
+                });
+            }
+
+            // Funzione per esportare la lista materiali in PDF
+            if (exportPdfButton) {
+                exportPdfButton.addEventListener('click', () => {
+                    const config = collectConfiguration();
+                    const materialsListItems = estimatedMaterialsList.querySelectorAll('li');
+                    
+                    let pdfContent = `Report di Configurazione Serbatoio\n`;
+                    pdfContent += `Data: ${new Date().toLocaleDateString('it-IT')}\n`;
+                    pdfContent += `Ora: ${new Date().toLocaleTimeString('it-IT')}\n`;
+                    pdfContent += `========================================\n\n`;
+
+                    pdfContent += `Dettagli Configurazione:\n`;
+                    for (const key in config) {
+                        if (config.hasOwnProperty(key) && config[key] !== '') {
+                            let displayValue = config[key];
+                            if (key === 'drainerType' && config[key] === 'ATS') {
+                                displayValue = 'Kit ATS';
+                            }
+                            if (key === 'ottoneFilter' && config.drainerType === 'ATS') {
+                                continue;
+                            }
+                            if (['inletDiameter', 'topInlet', 'bottomInlet', 'frontInletDiameter', 'compressorOutlet', 'compressorOutlet2', 'plantInlet', 'manometerDiameter', 'safetyValve', 'compressorInletDiameter'].includes(key)) {
+                                displayValue = formatInchValue(config[key]);
+                            }
+                            pdfContent += `${paramDisplayNames[key] || key}: ${displayValue}\n`;
+                        }
+                    }
+                    pdfContent += `\n========================================\n\n`;
+
+                    pdfContent += `Stima Materiali:\n`;
+                    if (materials.length > 0) { // Usa la variabile 'materials' che è popolata in showSummary()
+                        materials.forEach((item, index) => {
+                            pdfContent += `${index + 1}. ${item.name}: ${item.quantity}\n`;
+                        });
+                    } else {
+                        pdfContent += 'Nessun materiale stimato in base alle selezioni.\n';
+                    }
+
+                    // Apriamo una nuova finestra con il contenuto testuale migliorato
+                    const newWindow = window.open('', '_blank');
+                    newWindow.document.write('<pre>' + pdfContent + '</pre>');
+                    newWindow.document.title = 'Report Serbatoio - ' + new Date().toLocaleDateString('it-IT');
+                    newWindow.document.close();
+
+                    console.log('Contenuto che verrebbe esportato nel PDF:\n', pdfContent);
+                });
+            }
+        });
     </script>
 </body>
 </html>
